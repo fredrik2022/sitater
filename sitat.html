@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dagens sitat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --fg: #111827;
+      --muted: #6b7280;
+      --bg: #ffffff;
+    }
+    html, body {
+      height: 100%;
+    }
+    body {
+      margin: 0;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      padding: 16px;
+    }
+    .wrap {
+      max-width: 900px;
+      width: 100%;
+      text-align: center;
+    }
+    .title {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      color: var(--muted);
+      letter-spacing: .2px;
+    }
+    .quote {
+      font-size: 22px;
+      line-height: 1.5;
+      font-style: italic;
+      margin: 0;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity .35s ease, transform .35s ease;
+    }
+    .quote.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="title">Dagens spark bak (med glimt i øyet)</p>
+    <p id="q" class="quote">Laster sitat …</p>
+  </div>
+
+  <script>
+    const SITATER = [
+      "Start før du er klar – resten lærer du mens du går.",
+      "Perfekt er prokrastinering i smoking.",
+      "Du ble ikke ansatt for å tvile – du ble ansatt for å levere.",
+      "Det er lov å være nybegynner. Det er ikke lov å gi opp før start.",
+      "Mot er å trykke ‘send’ selv om pulsen har egen trommesolo.",
+      "Planen trenger ikke applaus. Den trenger handling.",
+      "Små skritt gir store historier – uten dramatiske monologer.",
+      "Hvis det er viktig, får det plass i kalenderen. Punktum.",
+      "Tvil roper høyt. Resultater svarer høyere.",
+      "Kaffe hjelper, men vaner gjør jobben.",
+      "Halvgjort i dag slår perfekt i morgen – hver gang.",
+      "Du er ikke bakpå – du er i gang.",
+      "Gjør det lett å begynne, så blir det lett å fortsette.",
+      "Ambisjoner uten handling er bare pynt på tomt fat.",
+      "Motgang: naturens treningssenter for karakter.",
+      "Suksess ser ofte ut som kjedelig disiplin i reprise.",
+      "Støy ut – steg inn.",
+      "Hvis du snubler, gjør det fremover.",
+      "Gjør én ting nå som fremtidige deg vil klappe for.",
+      "Du trenger ikke motivasjon – du trenger startknapp.",
+      "Det perfekte tidspunktet kommer ikke. Du må komme for begge.",
+      "Raskt er bra. Ferdig er bedre.",
+      "Du trenger ikke flaks når du møter opp hver dag.",
+      "Feil er kvittering på at du faktisk prøvde.",
+      "Gjør det vanskelig å feile: gjør det lett å starte.",
+      "Du kan både være redd og flink. Samtidig. Kjør.",
+      "Notater → plan → handling → resultat. Hopp ikke over trinn.",
+      "Tålmodighet er fart i forkledning.",
+      "Prioriter som om batteriet ditt er på 30 %.",
+      "Hver ‘meh’-dag du møter opp, dobler verdien av ‘wow’-dagene.",
+      "Du blir det du gjentar, ikke det du lover.",
+      "Kalenderen lyver ikke – men unnskyldninger gjør det.",
+      "Når alt roter seg, rydd i ti minutter og fortsett.",
+      "Du er én e-post unna momentum.",
+      "Del opp målet til det blir flaut å ikke starte.",
+      "Progress over perfeksjon. Alltid.",
+      "Gjør ferdig, så forbedre – ikke omvendt.",
+      "Kutt en distraksjon. Få en time tilbake.",
+      "Dagens beste unnskyldning teller ikke i morgen.",
+      "Disiplin er superkraft i sivil.",
+      "Litt bedre i dag er skummelt sterkt i morgen.",
+      "Vær snill med deg selv – og brutal med kalenderen.",
+      "Gjør rom for fokus. Lukk døra, åpne hjernen.",
+      "Du eier innsatsen din. Resultatet kommer som følge.",
+      "Frykt er ofte bare dårlig fantasi.",
+      "Si ‘nei’ til støy for å si ‘ja’ til mål.",
+      "Små vaner – stor fremtid.",
+      "Det vanskelige blir vanlig hvis du blir ved.",
+      "Tegn målet. Gå dit.",
+      "Ett ja i dag kan endre hele ruta.",
+      "Rutiner: autopilot for ambisjoner.",
+      "Gå dit energien peker. Ikke motsatt.",
+      "Gi deg selv en myk start – men en hard deadline.",
+      "Du lærer av veien, ikke av kartet alene.",
+      "Fiks konteksten – ikke bare viljen.",
+      "Kjør test over teori. Bevis slår brainstorming.",
+      "Møt opp på dårlige dager. De gode dagene klarer seg selv.",
+      "La kalenderen være kompass – ikke dagdrømmer.",
+      "Hver linje skrevet teller. Hver.",
+      "Bygg stillhet for fokus. Det bråker nok der ute.",
+      "Våg å være nybegynner oftere.",
+      "Optimér for å dukke opp, ikke for å imponere.",
+      "Tenk enkelt. Handle tydelig.",
+      "Gjør det udramatiske arbeidet. Det er der magien bor.",
+      "Små justeringer gir stor kursendring.",
+      "Du er nærmere enn du tror – fortsett.",
+      "Gjør det synlig hvor du skal. Gjerne høyt.",
+      "Fjern friksjon, finn flyt.",
+      "Hold løfter til deg selv. De teller mest.",
+      "Sette frist. Sette fart.",
+      "Hver dag er en bevisdag.",
+      "Bytt ‘må’ til ‘vil’ – se hva som skjer.",
+      "Planlegg lett, lever tungt.",
+      "Rydd to minutter – start.",
+      "Start lavt. Løft etter hvert.",
+      "Gjør litt før du scroller. Telefonen tåler det.",
+      "Ta ansvar for de første fem minuttene.",
+      "Det er lov å lære høyt – bare lær.",
+      "Fokuser på det du kan styre. Resten er værmelding.",
+      "Du blir ikke bedre av å gruble. Du blir bedre av å gjøre.",
+      "Legg lista der du starter – ikke der du snubler.",
+      "Vane slår vilje over tid.",
+      "Respekter små tidslommer. De betaler renter.",
+      "Trekk pusten. Ta plass. Sett i gang.",
+      "Små seire bygger stor selvtillit.",
+      "Du trenger ikke være genial. Bare pålitelig.",
+      "La arbeid gi ro – ikke støy.",
+      "Drivstoff: nysgjerrighet og litt stahet.",
+      "Ferdig føles bedre enn perfekt på skisseblokka.",
+      "Gi deg selv en sjanse mer enn sist.",
+      "Gjør feil. Lær fort. Fortsett.",
+      "Seier starter stille – med et ja.",
+      "Ett skritt til. Det er hele trikset.",
+      "Sikt på fremdrift, ikke applaus.",
+      "Dra dyna – men kom deg opp.",
+      "Hodet roer seg i handling.",
+      "Kutt én unødvendighet i dag.",
+      "Bygg dagen rundt det viktigste – ikke det høylydte.",
+      "Planen trenger deg mer enn du trenger motivasjon.",
+      "Gjør det mulig først, mesterlig senere.",
+      "Det er lov å justere kursen – ror er til for å svinge.",
+      "Start smått, tenk stort, gjenta ofte.",
+      "Vær modig i smått – så kommer stort av seg selv.",
+      "Ta det neste grepet. Ikke alt på en gang.",
+      "Gjør rom for energi – rydd, gå, drikk vann.",
+      "Du får ikke flere timer, men du kan få mer timeverdi.",
+      "Hold standarden når ingen ser på. Da er den ekte.",
+      "Prioriter som om fremtiden din ser på (det gjør den).",
+      "Det du gjemmer i utkast, hjelper ingen. Publisér.",
+      "Et middelmådig førsteutkast banker et perfekt aldri.",
+      "Bygg systemer som tåler dårlige dager."
+    ]; // 100 sitater
+
+    const el = document.getElementById("q");
+
+    function visSitat() {
+      const nå = new Date();
+      const minutt = nå.getMinutes();         // 0–59
+      const idx = minutt % SITATER.length;    // rullerer per minutt
+      // liten fade
+      el.classList.remove("show");
+      // vent et øyeblikk for å trigge CSS-transition
+      setTimeout(() => {
+        el.textContent = "«" + SITATER[idx] + "»";
+        el.classList.add("show");
+      }, 50);
+    }
+
+    visSitat();
+    // Oppdater hvert minutt ved minutt-skift
+    const msTilNesteMinutt = (60 - new Date().getSeconds()) * 1000 + 50;
+    setTimeout(() => {
+      visSitat();
+      setInterval(visSitat, 60 * 1000);
+    }, msTilNesteMinutt);
+  </script>
+</body>
+</html>
